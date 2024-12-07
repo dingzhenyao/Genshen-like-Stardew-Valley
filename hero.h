@@ -25,3 +25,11 @@ private:
 	Hero(const Hero&&) = delete;
 	Hero& operator=(const Hero&) = delete;
 }; 
+
+enum MyActionTag        //方向标记
+{
+	MyGoUp = 1,
+	MyGoDown,
+	MyGoLeft,
+	MyGoRight
+};

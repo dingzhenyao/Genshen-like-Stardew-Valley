@@ -16,6 +16,7 @@ static void problemLoading(const char* filename)
 
 bool HelloWorld::init()
 {
+    this->scheduleUpdate();
     using namespace cocos2d;
     if (!Scene::init())
     {
@@ -43,6 +44,8 @@ bool HelloWorld::init()
     listenerKeyboard->onKeyPressed = CC_CALLBACK_2(Hero::OnKeyPressed, myhero);
     listenerKeyboard->onKeyReleased = CC_CALLBACK_2(Hero::OnKeyRelease, myhero);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyboard, this);
+
+
     return true;
 }
 
@@ -50,4 +53,39 @@ bool HelloWorld::init()
 void HelloWorld::menuCloseCallback(Ref* pSender)
 {
     Director::getInstance()->end();
+}
+
+void HelloWorld::update(float delta)
+{
+    //ÆÁÄ»±ßÔµ¼ì²â
+    {
+        auto hero = Hero::GetHero();
+        auto ymax = Director::getInstance()->getVisibleSize().height;
+        auto xmax = Director::getInstance()->getVisibleSize().width;
+        auto heroposition = hero->getPosition();
+        if (ymax < heroposition.y + 10.f)
+        {
+            auto repeat = hero->getActionByTag(MyGoUp);
+            if (repeat)
+                hero->stopAction(repeat);
+        }
+        if (xmax < heroposition.x + 10.f)
+        {
+            auto repeat = hero->getActionByTag(MyGoRight);
+            if (repeat)
+                hero->stopAction(repeat);
+        }
+        if (heroposition.y - 10.0f < 0)
+        {
+            auto repeat = hero->getActionByTag(MyGoDown);
+            if (repeat)
+                hero->stopAction(repeat);
+        }
+        if (heroposition.x - 10.0f < 0)
+        {
+            auto repeat = hero->getActionByTag(MyGoLeft);
+            if (repeat)
+                hero->stopAction(repeat);
+        }
+    }
 }

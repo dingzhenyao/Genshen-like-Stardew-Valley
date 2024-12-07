@@ -23,15 +23,18 @@ void Hero::OnKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
 	    {
 			
 			auto action = MoveBy::create(0.1f, Vec2(0, HERO_SPEED));
-			MyHero->runAction(RepeatForever::create(action));
-			
+			auto repeat = RepeatForever::create(action);
+			repeat->setTag(MyGoUp);
+			MyHero->runAction(repeat);
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
 		case EventKeyboard::KeyCode::KEY_S: 
 		{
 			auto action = MoveBy::create(0.1f, Vec2(0, -HERO_SPEED));
-			MyHero->runAction(RepeatForever::create(action));
+			auto repeat = RepeatForever::create(action);
+			repeat->setTag(MyGoDown);
+			MyHero->runAction(repeat);
 			
 			break;
 		}
@@ -40,8 +43,9 @@ void Hero::OnKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
 		{
 	
 			auto action = MoveBy::create(0.1f, Vec2(-HERO_SPEED, 0));
-			MyHero->runAction(RepeatForever::create(action));
-			
+			auto repeat = RepeatForever::create(action);
+			repeat->setTag(MyGoLeft);
+			MyHero->runAction(repeat);
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_D:
@@ -49,7 +53,9 @@ void Hero::OnKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
 		{
 
 			auto action = MoveBy::create(0.1f, Vec2(HERO_SPEED, 0));
-			MyHero->runAction(RepeatForever::create(action));
+			auto repeat = RepeatForever::create(action);
+			repeat->setTag(MyGoRight);
+			MyHero->runAction(repeat);
 			break;
 		}
 		default:
@@ -64,27 +70,27 @@ void Hero::OnKeyRelease(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
 		case EventKeyboard::KeyCode::KEY_W:
 		case EventKeyboard::KeyCode::KEY_UP_ARROW:
 		{
-
-			auto action = MoveBy::create(0.1f, Vec2(0, HERO_SPEED));
-			MyHero->runAction(RepeatForever::create(action->reverse()));
-
+			
+			auto repeat = MyHero->getActionByTag(MyGoUp);
+			if (repeat)
+				MyHero->stopAction(repeat);
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
 		case EventKeyboard::KeyCode::KEY_S:
 		{
-			auto action = MoveBy::create(0.1f, Vec2(0, -HERO_SPEED));
-			MyHero->runAction(RepeatForever::create(action->reverse()));
-
+			auto repeat = MyHero->getActionByTag(MyGoDown);
+			if (repeat)
+				MyHero->stopAction(repeat);
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_A:
 		case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
 		{
 
-			auto action = MoveBy::create(0.1f, Vec2(-HERO_SPEED, 0));
-			MyHero->runAction(RepeatForever::create(action->reverse()));
-
+			auto repeat = MyHero->getActionByTag(MyGoLeft);
+			if (repeat)
+				MyHero->stopAction(repeat);
 			break;
 		}
 		case EventKeyboard::KeyCode::KEY_D:
@@ -92,9 +98,9 @@ void Hero::OnKeyRelease(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event*
 		{
 
 
-			auto action = MoveBy::create(0.1f, Vec2(HERO_SPEED, 0));
-			MyHero->runAction(RepeatForever::create(action->reverse()));
-			
+			auto repeat = MyHero->getActionByTag(MyGoRight);
+			if (repeat)
+				MyHero->stopAction(repeat);
 			break;
 		}
 		default:
