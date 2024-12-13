@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-class HelloWorld : public cocos2d::Scene
+class HelloWorld : public cocos2d::Layer
 {
 public:
     static cocos2d::Scene* createScene();
@@ -11,12 +11,25 @@ public:
     virtual bool init();
 
     // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
 
-    void update(float delta) override;
+    void update(float delta) override;              //重写的更新函数
 
+    void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
+
+    void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
+
+    void ChangeSeason(float delta);                 //改变季节函数
+
+    void onExit() override;                  
+    
+    
     // implement the "static create()" method manually
+
     CREATE_FUNC(HelloWorld);
+private:
+    static cocos2d::TMXTiledMap* map;               //瓦片地图成员,以瓦片地图为成员，方便切换季节
+   
+    static cocos2d::Sprite* hero;
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -7,26 +7,7 @@
 #define HERO_SPEED 50
 
 
-class Hero       //单例模式
-{
-public:
-	static Hero* instance();          
-
-	static cocos2d::Sprite* GetHero();
-
-	void OnKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
-
-	void OnKeyRelease(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
-
-private:
-	static cocos2d::Sprite* MyHero;        //英雄角色
-	Hero(){}
-	Hero(const Hero&) = delete;
-	Hero(const Hero&&) = delete;
-	Hero& operator=(const Hero&) = delete;
-}; 
-
-enum MyActionTag        //方向标记
+enum class MyActionTag        //方向标记
 {
 	MyGoUp = 1,
 	MyGoDown,

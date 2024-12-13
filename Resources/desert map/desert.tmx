@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="60" height="34" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="30" height="17" tilewidth="32" tileheight="32" infinite="0" nextlayerid="2" nextobjectid="1">
  <tileset firstgid="1" source="desert.tsx"/>
- <layer id="1" name="Ground" width="60" height="34">
+ <layer id="1" name="Ground" width="30" height="17">
   <data encoding="base64" compression="zlib">
-   eJztl2lPwzAMhg37wDGJcUiMQ6yBQRlX2f//dRitUSsrh53GbYb48GiblrV5/CZeswKAlSJnyAI5V75PCTQO36qAef3nm4ffLK+RJXLDGG9aXN9tC/DhcIAcIjNSB636Vhmvf4vcCbhHTpBTZF5A7aU8Ik8C1gN8h67fWjh+E/B9Rt6RF0VfaT009rf1XTPzlvpy56zZu/rrQts3l5+0X23Bvf6t3yfs+tHXSL5a0D1LP8fypPta4uvKMJRr6pp29aUNyde+j/nS3EvN95V8tn7SfHOsZ5MxS6k35Q1265XLB9PXeDxj2L4kqcdRyzF0z34hZsxxloeIb6qr9Y31YnrtBXTnF5tFiDlznOt3XA9Jn6og/NxMfZfQnV8ukMsIV8xxrt9p7EHX+g75cvfuPmEIobEle+fo02P5Sc+S9jw5dY2lNO2r9L+7/5w+BpLzo2GMKd03J99KvqH9XAsz82VsmHnSvjB2vlLXkG/K/Yf4+u6Z4uQi1cm3lrXyjflyPExmX6313N+fjWcM1ze3a25fbi/ScuEgPUva86TWfDi1MA6mql9/PlPOQYq0x4bqvQ/+NaQ9G/ylzDX5AQYz7T0=
+   eJzFlcsOgjAQRUdZ+CARVz4jRlHEZ/z/r/MSIZBJGaZg6+IsmrQ9c2caiIkodsgMRGDu2FPnZfDuPbn/kTfPtgBLsPLozRmAIQhYPTZ3rMHGgi2YgCkIe9R+AEcLkg7eTPCewA2cHXilvIkyfx9v6tH7Zj7ufdD33Tx/5OUz5eu2fHzuktf0fjKWN1V6eR/a8l4aZmqbt2ufuZ9zLfqo5S54RwVjqr5pEoFyX8muwRtR9b8oa5MIlftM5+reD/UjNoc=
   </data>
  </layer>
 </map>

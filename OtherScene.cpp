@@ -1,169 +1,95 @@
-#include "HelloWorldScene.h"
-#include"hero.h"
+#include"cocos2d.h"
 #include"OtherScene.h"
+#include"hero.h"
 USING_NS_CC;
 
-cocos2d::TMXTiledMap* HelloWorld::map = nullptr;
-Sprite* HelloWorld::hero = nullptr;
-Scene* HelloWorld::createScene()
+
+cocos2d::TMXTiledMap* Desert::map = nullptr;
+Sprite* Desert::hero = nullptr;
+Scene* Desert::createScene()
 {
     auto scene = Scene::createWithPhysics();
     scene->getPhysicsWorld()->setGravity(Vec2(0, 0));
     scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
-   
-    auto layer = HelloWorld::create();
-    
-    scene->addChild(layer);
-    
 
+    auto layer = Desert::create();
+    scene->addChild(layer);
     return scene;
 }
 
-bool HelloWorld::init()
+bool Desert::init()
 {
-    
-    using namespace cocos2d;
-   
-    this->scheduleUpdate();
-    //this->schedule(SEL_SCHEDULE(&HelloWorld::ChangeSeason),6.0f,kRepeatForever,0.0f);
-    
+
     if (!Layer::init())
     {
         return false;
     }
-   
+    this->scheduleUpdate();
+    auto director = Director::getInstance();
+
+    auto origin = director->getVisibleOrigin();
+    auto visibleSize = director->getVisibleSize();
+
+    if(!map)
+        map = TMXTiledMap::create("desert map/desert.tmx");
 
     
-  
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    //初始地图
-    if (!map)
-        map = TMXTiledMap::create("home map/home.tmx");                  //加载瓦片地图,初始地图 
-  
-
-    
-
-    auto director = Director::getInstance();                       //获得导演
     map->setScale(director->getContentScaleFactor() * 2);              //调整大小，适配屏幕
-    
-    //加载地图
-    
     this->addChild(map, 1);
-    
 
-    //添加NPC
-    auto enemy = Sprite::create("monster.png");
-    enemy->setPosition(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y - 100);
-    auto enemybody = PhysicsBody::createBox(enemy->getContentSize());
-    enemybody->setGravityEnable(false);
-    enemybody->setDynamic(false);
-    enemy->setPhysicsBody(enemybody);
-    this->addChild(enemy, 3);
-    auto sequence = Sequence::create(MoveBy::create(10.0f, Vec2(-500, 0)),MoveBy::create(10.0f,Vec2(500,0)), nullptr);
-    auto reAction = RepeatForever::create(sequence);
-    enemy->runAction(reAction);
 
-    //放置主角
     hero = Sprite::create("player.png");
-    hero->setPosition(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y);
+    hero->setPosition(origin.x, visibleSize.height / 2 + origin.y);
     this->addChild(hero, 3);
     auto herobody = PhysicsBody::createBox(hero->getContentSize());
     herobody->setGravityEnable(false);
-    herobody->setDynamic(true);
+    herobody->setDynamic(false);
     hero->setPhysicsBody(herobody);
-
-    //键盘监听
+    
+   
     auto listenerKeyboard = cocos2d::EventListenerKeyboard::create();
-    listenerKeyboard->onKeyPressed = CC_CALLBACK_2(HelloWorld::onKeyPressed, this);
-    listenerKeyboard->onKeyReleased = CC_CALLBACK_2(HelloWorld::onKeyReleased, this);
+    listenerKeyboard->onKeyPressed = CC_CALLBACK_2(Desert::onKeyPressed, this);
+    listenerKeyboard->onKeyReleased = CC_CALLBACK_2(Desert::onKeyReleased, this);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyboard, this);
 
-    
     return true;
 }
 
-void HelloWorld::update(float delta)      //场景帧更新函数
+void Desert::update(float delta)      //场景帧更新函数
 {
-    auto director = Director::getInstance();
-   
-    auto ymax = Director::getInstance()->getVisibleSize().height;  //屏幕边缘
-    auto xmax = Director::getInstance()->getVisibleSize().width;
-    auto heroposition = hero->getPosition();
     //屏幕边缘检测
     {
+        auto ymax = Director::getInstance()->getVisibleSize().height;  //屏幕边缘
+        auto xmax = Director::getInstance()->getVisibleSize().width;
+        auto heroposition = hero->getPosition();
         if (ymax < heroposition.y + 10.f)
         {
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoUp));
+            auto repeat = hero->getActionByTag((int)MyActionTag::MyGoUp);
             if (repeat)
                 hero->stopAction(repeat);
         }
         if (xmax < heroposition.x + 10.f)
         {
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoRight));
+            auto repeat = hero->getActionByTag((int)MyActionTag::MyGoRight);
             if (repeat)
                 hero->stopAction(repeat);
         }
         if (heroposition.y - 10.0f < 0)
         {
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoDown));
+            auto repeat = hero->getActionByTag((int)MyActionTag::MyGoDown);
             if (repeat)
                 hero->stopAction(repeat);
         }
         if (heroposition.x - 10.0f < 0)
         {
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoLeft));
+            auto repeat = hero->getActionByTag((int)MyActionTag::MyGoLeft);
             if (repeat)
                 hero->stopAction(repeat);
         }
     }
-    if(abs(heroposition.x - xmax) < 10.0f && abs(heroposition.y - ymax / 2) < 100.0f)
-    {
-        
-        auto desert = Desert::createScene();
-        Director::getInstance()->replaceScene(desert);
-    }
 }
 
-void HelloWorld::ChangeSeason(float delta)
-{
-    static int Time = 0;
-    Time++;
-    if(Time % 2 == 1)
-    {
-        auto zorder = map->getLocalZOrder();
-        auto newmap = TMXTiledMap::create("desert map/desert.tmx");
-        auto director = Director::getInstance();                       //获得导演
-        newmap->setScale(director->getContentScaleFactor() * 2);              //调整大小，适配屏幕
-        this->removeChild(map, true);
-        this->addChild(newmap, zorder);
-        map = newmap;
-    }
-    else if (Time % 2 == 0)
-    {
-        auto zorder = map->getLocalZOrder();
-        auto newmap = TMXTiledMap::create("home map/home.tmx");
-        auto director = Director::getInstance();                       //获得导演
-        newmap->setScale(director->getContentScaleFactor() * 2);              //调整大小，适配屏幕
-        this->removeChild(map, true);
-        this->addChild(newmap, zorder);
-        map = newmap;
-    }
-}
-
-void HelloWorld::onExit()
-{
-    for (auto child : this->getChildren())
-    {
-        child->pause();
-    }
-    this->removeAllChildren();
-    if(this->isRunning())
-        Director::getInstance()->getTextureCache()->removeUnusedTextures();
-    Layer::onExit();
-}
-
-void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
+void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
     switch (keyCode)
     {
@@ -212,7 +138,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     }
 }
 
-void HelloWorld::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
+void Desert::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
     switch (keyCode)
     {
@@ -256,4 +182,3 @@ void HelloWorld::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d:
             break;
     }
 }
-
