@@ -1,11 +1,9 @@
 #include"cocos2d.h"
 #include"OtherScene.h"
+#include"HelloWorldScene.h"
 #include"hero.h"
 USING_NS_CC;
 
-
-cocos2d::TMXTiledMap* Desert::map = nullptr;
-Sprite* Desert::hero = nullptr;
 Scene* Desert::createScene()
 {
     auto scene = Scene::createWithPhysics();
@@ -39,7 +37,7 @@ bool Desert::init()
 
 
     hero = Sprite::create("player.png");
-    hero->setPosition(origin.x, visibleSize.height / 2 + origin.y);
+    hero->setPosition(origin.x + 100.0f, visibleSize.height / 2 + origin.y);
     this->addChild(hero, 3);
     auto herobody = PhysicsBody::createBox(hero->getContentSize());
     herobody->setGravityEnable(false);
@@ -57,11 +55,12 @@ bool Desert::init()
 
 void Desert::update(float delta)      //³¡¾°Ö¡¸üÐÂº¯Êý
 {
+    auto ymax = Director::getInstance()->getVisibleSize().height;  //ÆÁÄ»±ßÔµ
+    auto xmax = Director::getInstance()->getVisibleSize().width;
+    auto heroposition = hero->getPosition();
     //ÆÁÄ»±ßÔµ¼ì²â
     {
-        auto ymax = Director::getInstance()->getVisibleSize().height;  //ÆÁÄ»±ßÔµ
-        auto xmax = Director::getInstance()->getVisibleSize().width;
-        auto heroposition = hero->getPosition();
+        
         if (ymax < heroposition.y + 10.f)
         {
             auto repeat = hero->getActionByTag((int)MyActionTag::MyGoUp);
@@ -87,6 +86,11 @@ void Desert::update(float delta)      //³¡¾°Ö¡¸üÐÂº¯Êý
                 hero->stopAction(repeat);
         }
     }
+    if (abs(heroposition.x) < 10.0f && abs(heroposition.y - ymax / 2) < 100.0f)
+    {
+        
+        Director::getInstance()->popScene();
+    }
 }
 
 void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
@@ -100,7 +104,7 @@ void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Even
             auto action = MoveBy::create(0.1f, Vec2(0, HERO_SPEED));
             auto repeat = RepeatForever::create(action);
             repeat->setTag(static_cast<int>(MyActionTag::MyGoUp));
-            hero->runAction(repeat);
+            this->hero->runAction(repeat);
             break;
         }
         case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
@@ -109,7 +113,7 @@ void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Even
             auto action = MoveBy::create(0.1f, Vec2(0, -HERO_SPEED));
             auto repeat = RepeatForever::create(action);
             repeat->setTag(static_cast<int>(MyActionTag::MyGoDown));
-            hero->runAction(repeat);
+            this->hero->runAction(repeat);
 
             break;
         }
@@ -120,7 +124,7 @@ void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Even
             auto action = MoveBy::create(0.1f, Vec2(-HERO_SPEED, 0));
             auto repeat = RepeatForever::create(action);
             repeat->setTag(static_cast<int>(MyActionTag::MyGoLeft));
-            hero->runAction(repeat);
+            this->hero->runAction(repeat);
             break;
         }
         case EventKeyboard::KeyCode::KEY_D:
@@ -130,7 +134,7 @@ void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Even
             auto action = MoveBy::create(0.1f, Vec2(HERO_SPEED, 0));
             auto repeat = RepeatForever::create(action);
             repeat->setTag(static_cast<int>(MyActionTag::MyGoRight));
-            hero->runAction(repeat);
+            this->hero->runAction(repeat);
             break;
         }
         default:
@@ -146,26 +150,26 @@ void Desert::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Eve
         case EventKeyboard::KeyCode::KEY_UP_ARROW:
         {
 
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoUp));
+            auto repeat = this->hero->getActionByTag(static_cast<int>(MyActionTag::MyGoUp));
             if (repeat)
-                hero->stopAction(repeat);
+                this->hero->stopAction(repeat);
             break;
         }
         case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
         case EventKeyboard::KeyCode::KEY_S:
         {
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoDown));
+            auto repeat = this->hero->getActionByTag(static_cast<int>(MyActionTag::MyGoDown));
             if (repeat)
-                hero->stopAction(repeat);
+                this->hero->stopAction(repeat);
             break;
         }
         case EventKeyboard::KeyCode::KEY_A:
         case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
         {
 
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoLeft));
+            auto repeat = this->hero->getActionByTag(static_cast<int>(MyActionTag::MyGoLeft));
             if (repeat)
-                hero->stopAction(repeat);
+                this->hero->stopAction(repeat);
             break;
         }
         case EventKeyboard::KeyCode::KEY_D:
@@ -173,12 +177,18 @@ void Desert::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Eve
         {
 
 
-            auto repeat = hero->getActionByTag(static_cast<int>(MyActionTag::MyGoRight));
+            auto repeat = this->hero->getActionByTag(static_cast<int>(MyActionTag::MyGoRight));
             if (repeat)
-                hero->stopAction(repeat);
+                this->hero->stopAction(repeat);
             break;
         }
         default:
             break;
     }
+}
+
+void Desert::onExit()
+{
+   
+    Layer::onExit();
 }

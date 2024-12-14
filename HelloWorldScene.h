@@ -12,15 +12,15 @@ public:
 
     // a selector callback
 
-    void update(float delta) override;              //重写的更新函数
+    virtual void update(float delta);              //重写的更新函数
 
-    void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
+    virtual void onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 
-    void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event) override;
+    virtual void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 
     void ChangeSeason(float delta);                 //改变季节函数
 
-    void onExit() override;                  
+    virtual void onExit();                  
     
     
     // implement the "static create()" method manually
