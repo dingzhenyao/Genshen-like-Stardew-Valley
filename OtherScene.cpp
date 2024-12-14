@@ -88,7 +88,7 @@ void Desert::update(float delta)      //场景帧更新函数
     }
     if (abs(heroposition.x) < 10.0f && abs(heroposition.y - ymax / 2) < 100.0f)
     {
-        
+        hero->stopAllActions();
         Director::getInstance()->popScene();
     }
 }
@@ -181,6 +181,10 @@ void Desert::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Eve
             if (repeat)
                 this->hero->stopAction(repeat);
             break;
+        }
+        case EventKeyboard::KeyCode::KEY_ESCAPE:
+        {
+            Director::getInstance()->end();
         }
         default:
             break;

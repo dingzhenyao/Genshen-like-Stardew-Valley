@@ -1,6 +1,7 @@
 #include "HelloWorldScene.h"
 #include"hero.h"
 #include"OtherScene.h"
+#include"NPC.h"
 USING_NS_CC;
 
 cocos2d::TMXTiledMap* HelloWorld::map = nullptr;
@@ -56,11 +57,13 @@ bool HelloWorld::init()
     auto enemybody = PhysicsBody::createBox(enemy->getContentSize());
     enemybody->setGravityEnable(false);
     enemybody->setDynamic(false);
+    enemybody->setCategoryBitmask((int)PhysicsCategory::NPC);
+    enemybody->setContactTestBitmask((int)PhysicsCategory::Hero);
     enemy->setPhysicsBody(enemybody);
     this->addChild(enemy, 3);
-    auto sequence = Sequence::create(MoveBy::create(10.0f, Vec2(-500, 0)),MoveBy::create(10.0f,Vec2(500,0)), nullptr);
-    auto reAction = RepeatForever::create(sequence);
-    enemy->runAction(reAction);
+    //auto sequence = Sequence::create(MoveBy::create(10.0f, Vec2(-500, 0)),MoveBy::create(10.0f,Vec2(500,0)), nullptr);
+    //auto reAction = RepeatForever::create(sequence);
+    //enemy->runAction(reAction);
 
     //·ÅÖÃÖ÷½Ç
     hero = Sprite::create("player.png");
@@ -68,8 +71,13 @@ bool HelloWorld::init()
     this->addChild(hero, 3);
     auto herobody = PhysicsBody::createBox(hero->getContentSize());
     herobody->setGravityEnable(false);
-    herobody->setDynamic(true);
+    herobody->setDynamic(false);
+    //ÉèÖÃÎ»ÑÚÂë
+    herobody->setCategoryBitmask((int)PhysicsCategory::Hero);
+    herobody->setContactTestBitmask((int)PhysicsCategory::NPC);
+    herobody->setCollisionBitmask(0);
     hero->setPhysicsBody(herobody);
+    hero->stopAllActions();
 
     //¼üÅÌ¼àÌı
     auto listenerKeyboard = cocos2d::EventListenerKeyboard::create();
@@ -77,6 +85,22 @@ bool HelloWorld::init()
     listenerKeyboard->onKeyReleased = CC_CALLBACK_2(HelloWorld::onKeyReleased, this);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyboard, this);
 
+
+    //Åö×²¼ì²â
+    auto physicalcontact = cocos2d::EventListenerPhysicsContact::create();
+    physicalcontact->onContactBegin =  [](PhysicsContact& contact) -> bool
+        {
+            auto ShapeA = contact.getShapeA()->getBody();
+            auto ShapeB = contact.getShapeB()->getBody();
+            switch (ShapeB->getCategoryBitmask())
+            {
+                case (int)PhysicsCategory::NPC:
+                    ShapeA->getNode()->stopAllActions();
+                break;
+            }
+            return true;
+        };
+    director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(physicalcontact, this);
     
     return true;
 }
@@ -120,6 +144,7 @@ void HelloWorld::update(float delta)      //³¡¾°Ö¡¸üĞÂº¯Êı
         hero->setPosition(heroposition.x - 100.0f, heroposition.y);
         auto desert = Desert::createScene();//ÏÂÒ»¸ö³¡¾°
         Director::getInstance()->pushScene(desert);
+        hero->stopAllActions();
     }
 }
 
@@ -204,6 +229,10 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             repeat->setTag(static_cast<int>(MyActionTag::MyGoRight));
             this->hero->runAction(repeat);
             break;
+        }
+        case EventKeyboard::KeyCode::KEY_ESCAPE:
+        {
+            Director::getInstance()->end();
         }
         default:
             break;
