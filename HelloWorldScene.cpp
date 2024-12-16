@@ -2,6 +2,7 @@
 #include"hero.h"
 #include"OtherScene.h"
 #include"NPC.h"
+#include"menu.h"
 USING_NS_CC;
 
 cocos2d::TMXTiledMap* HelloWorld::map = nullptr;
@@ -233,6 +234,12 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         case EventKeyboard::KeyCode::KEY_ESCAPE:
         {
             Director::getInstance()->end();
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_TAB:
+        {
+            Scene* menu = GameMenu::createScene();
+            Director::getInstance()->pushScene(menu);
         }
         default:
             break;

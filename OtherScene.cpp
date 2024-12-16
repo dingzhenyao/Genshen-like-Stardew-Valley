@@ -2,6 +2,7 @@
 #include"OtherScene.h"
 #include"HelloWorldScene.h"
 #include"hero.h"
+#include"menu.h"
 USING_NS_CC;
 
 Scene* Desert::createScene()
@@ -137,6 +138,12 @@ void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Even
             this->hero->runAction(repeat);
             break;
         }
+        case EventKeyboard::KeyCode::KEY_TAB:
+        {
+            auto menu = GameMenu::createScene();
+            Director::getInstance()->pushScene(menu);
+            break;
+        }
         default:
             break;
     }
@@ -181,10 +188,6 @@ void Desert::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Eve
             if (repeat)
                 this->hero->stopAction(repeat);
             break;
-        }
-        case EventKeyboard::KeyCode::KEY_ESCAPE:
-        {
-            Director::getInstance()->end();
         }
         default:
             break;
