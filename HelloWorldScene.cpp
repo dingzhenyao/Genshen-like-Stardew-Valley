@@ -3,10 +3,14 @@
 #include"OtherScene.h"
 #include"NPC.h"
 #include"menu.h"
+#include"Plant.h"
 USING_NS_CC;
 
 cocos2d::TMXTiledMap* HelloWorld::map = nullptr;
 Sprite* HelloWorld::hero = nullptr;
+Sprite* HelloWorld::collidedSprite = nullptr;
+bool HelloWorld::IsCollide = false;
+
 Scene* HelloWorld::createScene()
 {
     auto scene = Scene::createWithPhysics();
@@ -14,10 +18,11 @@ Scene* HelloWorld::createScene()
     scene->getPhysicsWorld()->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
    
     auto layer = HelloWorld::create();
-    
     scene->addChild(layer);
     return scene;
 }
+
+
 
 bool HelloWorld::init()
 {
@@ -50,9 +55,8 @@ bool HelloWorld::init()
     //加载地图
     
     this->addChild(map, 1);
-    
 
-    //添加NPC
+    //添加NPC and Physical body
     auto enemy = Sprite::create("monster.png");
     enemy->setPosition(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y - 100);
     auto enemybody = PhysicsBody::createBox(enemy->getContentSize());
@@ -65,6 +69,7 @@ bool HelloWorld::init()
     //auto sequence = Sequence::create(MoveBy::create(10.0f, Vec2(-500, 0)),MoveBy::create(10.0f,Vec2(500,0)), nullptr);
     //auto reAction = RepeatForever::create(sequence);
     //enemy->runAction(reAction);
+
 
     //放置主角
     hero = Sprite::create("player.png");
@@ -86,23 +91,13 @@ bool HelloWorld::init()
     listenerKeyboard->onKeyReleased = CC_CALLBACK_2(HelloWorld::onKeyReleased, this);
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listenerKeyboard, this);
 
-
     //碰撞检测
     auto physicalcontact = cocos2d::EventListenerPhysicsContact::create();
-    physicalcontact->onContactBegin =  [](PhysicsContact& contact) -> bool
-        {
-            auto ShapeA = contact.getShapeA()->getBody();
-            auto ShapeB = contact.getShapeB()->getBody();
-            switch (ShapeB->getCategoryBitmask())
-            {
-                case (int)PhysicsCategory::NPC:
-                    ShapeA->getNode()->stopAllActions();
-                break;
-            }
-            return true;
-        };
+    physicalcontact->onContactBegin = CC_CALLBACK_1(HelloWorld::onContactBegin, this);
+    physicalcontact->onContactSeparate = CC_CALLBACK_1(HelloWorld::onContactSeparate, this);
+
     director->getEventDispatcher()->addEventListenerWithSceneGraphPriority(physicalcontact, this);
-    
+
     return true;
 }
 
@@ -240,6 +235,21 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         {
             Scene* menu = GameMenu::createScene();
             Director::getInstance()->pushScene(menu);
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_P:
+        {
+            AddPlant();
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_K:
+        {
+            if (IsCollide)
+            {
+                if(collidedSprite)
+                    this->removeChild(collidedSprite, true);
+            }
+            break;
         }
         default:
             break;
@@ -290,4 +300,55 @@ void HelloWorld::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d:
             break;
     }
 }
+
+bool HelloWorld::onContactBegin(PhysicsContact& contact)
+{
+    auto ShapeA = contact.getShapeA()->getBody();
+    auto ShapeB = contact.getShapeB()->getBody();
+    switch (ShapeB->getCategoryBitmask())
+    {
+        case (int)PhysicsCategory::NPC:
+        {
+            IsCollide = true;
+            collidedSprite = (Sprite*)ShapeB->getNode();
+        }
+        break;
+    }
+    return true;
+}
+
+bool HelloWorld::onContactSeparate(PhysicsContact& contact)
+{
+    auto ShapeA = contact.getShapeA()->getBody();
+    auto ShapeB = contact.getShapeB()->getBody();
+    switch (ShapeB->getCategoryBitmask())
+    {
+        case (int)PhysicsCategory::NPC:
+        {
+            IsCollide = false;
+            collidedSprite = nullptr;
+        }
+        break;
+    }
+    return true;
+}
+
+
+void HelloWorld::AddPlant()
+{
+    auto position = hero->getPosition();
+
+    auto plant = Plant::create("monster.png");
+
+    plant->setPosition(position);
+
+    this->addChild(plant, 2);
+
+    plant->scheduleOnce(SEL_SCHEDULE(&Plant::update), 10.f);
+    
+    //plant->unschedule(SEL_SCHEDULE(&Plant::update));     //取消调度器
+}
+
+
+
 
