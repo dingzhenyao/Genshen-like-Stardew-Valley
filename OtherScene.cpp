@@ -3,6 +3,7 @@
 #include"HelloWorldScene.h"
 #include"hero.h"
 #include"menu.h"
+#include"Bag.h"
 USING_NS_CC;
 
 Scene* Desert::createScene()
@@ -96,52 +97,82 @@ void Desert::update(float delta)      //场景帧更新函数
 
 void Desert::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
+    static bool IsBag = false;
+    static int BagNumber = 0;
     switch (keyCode)
     {
         case EventKeyboard::KeyCode::KEY_W:
         case EventKeyboard::KeyCode::KEY_UP_ARROW:
         {
-
-            auto action = MoveBy::create(0.1f, Vec2(0, HERO_SPEED));
-            auto repeat = RepeatForever::create(action);
-            repeat->setTag(static_cast<int>(MyActionTag::MyGoUp));
-            this->hero->runAction(repeat);
+            if (!IsBag)
+            {
+                auto action = MoveBy::create(0.1f, Vec2(0, HERO_SPEED));
+                auto repeat = RepeatForever::create(action);
+                repeat->setTag(static_cast<int>(MyActionTag::MyGoUp));
+                this->hero->runAction(repeat);
+            }
             break;
         }
         case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
         case EventKeyboard::KeyCode::KEY_S:
         {
-            auto action = MoveBy::create(0.1f, Vec2(0, -HERO_SPEED));
-            auto repeat = RepeatForever::create(action);
-            repeat->setTag(static_cast<int>(MyActionTag::MyGoDown));
-            this->hero->runAction(repeat);
+            if (!IsBag)
+            {
+                auto action = MoveBy::create(0.1f, Vec2(0, -HERO_SPEED));
+                auto repeat = RepeatForever::create(action);
+                repeat->setTag(static_cast<int>(MyActionTag::MyGoDown));
+                this->hero->runAction(repeat);
+            }
 
             break;
         }
         case EventKeyboard::KeyCode::KEY_A:
         case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
         {
-
-            auto action = MoveBy::create(0.1f, Vec2(-HERO_SPEED, 0));
-            auto repeat = RepeatForever::create(action);
-            repeat->setTag(static_cast<int>(MyActionTag::MyGoLeft));
-            this->hero->runAction(repeat);
+            if (!IsBag)
+            {
+                auto action = MoveBy::create(0.1f, Vec2(-HERO_SPEED, 0));
+                auto repeat = RepeatForever::create(action);
+                repeat->setTag(static_cast<int>(MyActionTag::MyGoLeft));
+                this->hero->runAction(repeat);
+            }
             break;
         }
         case EventKeyboard::KeyCode::KEY_D:
         case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
         {
-
-            auto action = MoveBy::create(0.1f, Vec2(HERO_SPEED, 0));
-            auto repeat = RepeatForever::create(action);
-            repeat->setTag(static_cast<int>(MyActionTag::MyGoRight));
-            this->hero->runAction(repeat);
+            if (!IsBag)
+            {
+                auto action = MoveBy::create(0.1f, Vec2(HERO_SPEED, 0));
+                auto repeat = RepeatForever::create(action);
+                repeat->setTag(static_cast<int>(MyActionTag::MyGoRight));
+                this->hero->runAction(repeat);
+            }
             break;
         }
         case EventKeyboard::KeyCode::KEY_TAB:
         {
             auto menu = GameMenu::createScene();
             Director::getInstance()->pushScene(menu);
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_B:
+        {
+            if (BagNumber & 1)
+            {
+                auto bag = this->getChildByTag(Bag::BagTag);
+
+                this->removeChildByTag(Bag::BagTag, true);
+                IsBag = false;
+            }
+            else
+            {
+                auto bag = Bag::createLayer();
+                bag->setTag(Bag::BagTag);
+                this->addChild(bag, INT_MAX);
+                IsBag = true;
+            }
+            BagNumber++;
             break;
         }
         default:
