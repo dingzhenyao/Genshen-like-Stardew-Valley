@@ -1,10 +1,9 @@
 #pragma once
 /*
 * 作用：背包
+* 
+* 储存物品，保存物品的图像，数量信息
 */
-
-
-
 #ifndef _BAG_H_
 #define _BAG_H_
 #include<cocos2d.h>

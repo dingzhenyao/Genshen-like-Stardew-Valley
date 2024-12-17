@@ -34,6 +34,7 @@ bool Bag::init()
 	BeginY = viSize.height / 2 - 5 * select_cell->getContentSize().height;
 	EndY = viSize.height / 2 + 5 * select_cell->getContentSize().height;
 
+	//将初始的选中格子放入Layer中
 	select_cell->setPosition(BeginX, BeginY);
 
 	for (float X = BeginX; X <= EndX; X += select_cell->getContentSize().width)   //添加格子
@@ -64,6 +65,7 @@ void Bag::AddCell(Vec2 Pos)
 void Bag::onKeyPressed(EventKeyboard::KeyCode keycode,Event* event)
 {
 	auto position = select_cell->getPosition();
+	//移动选中的格子
 	switch (keycode)
 	{
 		case EventKeyboard::KeyCode::KEY_UP_ARROW:

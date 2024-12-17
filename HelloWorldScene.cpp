@@ -58,18 +58,8 @@ bool HelloWorld::init()
     this->addChild(map, 1);
 
     //添加NPC and Physical body
-    auto enemy = Sprite::create("monster.png");
-    enemy->setPosition(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y - 100);
-    auto enemybody = PhysicsBody::createBox(enemy->getContentSize());
-    enemybody->setGravityEnable(false);
-    enemybody->setDynamic(false);
-    enemybody->setCategoryBitmask((int)PhysicsCategory::NPC);
-    enemybody->setContactTestBitmask((int)PhysicsCategory::Hero);
-    enemy->setPhysicsBody(enemybody);
-    this->addChild(enemy, 3);
-    //auto sequence = Sequence::create(MoveBy::create(10.0f, Vec2(-500, 0)),MoveBy::create(10.0f,Vec2(500,0)), nullptr);
-    //auto reAction = RepeatForever::create(sequence);
-    //enemy->runAction(reAction);
+    
+    
 
 
     //放置主角
@@ -81,7 +71,7 @@ bool HelloWorld::init()
     herobody->setDynamic(false);
     //设置位掩码
     herobody->setCategoryBitmask((int)PhysicsCategory::Hero);
-    herobody->setContactTestBitmask((int)PhysicsCategory::NPC);
+    herobody->setContactTestBitmask(0xfffffff);
     herobody->setCollisionBitmask(0);
     hero->setPhysicsBody(herobody);
     hero->stopAllActions();
@@ -187,6 +177,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
 {
     static bool IsBag = false;
     static int BagNumber = 0;
+    static EventKeyboard::KeyCode lastKeycode = EventKeyboard::KeyCode::KEY_0;
     switch (keyCode)
     {
         case EventKeyboard::KeyCode::KEY_W:
@@ -253,7 +244,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         {
             if(!IsBag)
             {
-                AddPlant();
+                lastKeycode = EventKeyboard::KeyCode::KEY_P;
             }
             break;
         }
@@ -283,6 +274,27 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
                 IsBag = true;
             }
             BagNumber++;
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_Q:
+        {
+            AddAnimal();
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_1:
+        {
+            if (lastKeycode == EventKeyboard::KeyCode::KEY_P)
+            {
+                AddPlant("monster.png");
+            }
+            break;
+        }
+        case EventKeyboard::KeyCode::KEY_2:
+        {
+            if (lastKeycode == EventKeyboard::KeyCode::KEY_P)
+            {
+                AddPlant("player.png");
+            }
             break;
         }
         default:
@@ -341,7 +353,7 @@ bool HelloWorld::onContactBegin(PhysicsContact& contact)
     auto ShapeB = contact.getShapeB()->getBody();
     switch (ShapeB->getCategoryBitmask())
     {
-        case (int)PhysicsCategory::NPC:
+        case (int)PhysicsCategory::Animal:
         {
             IsCollide = true;
             collidedSprite = (Sprite*)ShapeB->getNode();
@@ -357,7 +369,7 @@ bool HelloWorld::onContactSeparate(PhysicsContact& contact)
     auto ShapeB = contact.getShapeB()->getBody();
     switch (ShapeB->getCategoryBitmask())
     {
-        case (int)PhysicsCategory::NPC:
+        case (int)PhysicsCategory::Animal:
         {
             IsCollide = false;
             collidedSprite = nullptr;
@@ -368,11 +380,11 @@ bool HelloWorld::onContactSeparate(PhysicsContact& contact)
 }
 
 
-void HelloWorld::AddPlant()
+void HelloWorld::AddPlant(const std::string & filepath)
 {
     auto position = hero->getPosition();
 
-    auto plant = Plant::create("monster.png");
+    auto plant = Plant::create(filepath);
 
     plant->setPosition(position);
 
@@ -381,6 +393,28 @@ void HelloWorld::AddPlant()
     plant->scheduleOnce(SEL_SCHEDULE(&Plant::update), 10.f);
     
     //plant->unschedule(SEL_SCHEDULE(&Plant::update));     //取消调度器
+}
+
+void HelloWorld::AddAnimal()
+{
+    //auto visblieSize = Director::getInstance()->getVisibleSize();
+    //auto origin = Director::getInstance()->getVisibleOrigin();
+
+
+    auto animal = Sprite::create("monster.png");
+    animal->setPosition(hero->getPosition());
+    auto animalbody = PhysicsBody::createBox(animal->getContentSize());
+    animalbody->setGravityEnable(false);
+    animalbody->setDynamic(false);
+    animalbody->setCategoryBitmask((int)PhysicsCategory::Animal);
+    animalbody->setContactTestBitmask((int)PhysicsCategory::Hero);
+    animal->setPhysicsBody(animalbody);
+    this->addChild(animal, 3);
+
+
+    //auto sequence = Sequence::create(MoveBy::create(10.0f, Vec2(-500, 0)),MoveBy::create(10.0f,Vec2(500,0)), nullptr);
+    //auto reAction = RepeatForever::create(sequence);
+    //animal->runAction(reAction);
 }
 
 
