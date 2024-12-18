@@ -13,10 +13,3 @@ enum class PhysicsCategory
 	Animal = (1 << 2)
 };
 
-class NPC : public cocos2d::Sprite
-{
-public:
-	
-private:
-};
-

@@ -6,7 +6,6 @@
 #include"Plant.h"
 #include"bag.h"
 USING_NS_CC;
-
 cocos2d::TMXTiledMap* HelloWorld::map = nullptr;
 Sprite* HelloWorld::hero = nullptr;
 Sprite* HelloWorld::collidedSprite = nullptr;
@@ -23,8 +22,6 @@ Scene* HelloWorld::createScene()
     return scene;
 }
 
-
-
 bool HelloWorld::init()
 {
     
@@ -37,30 +34,18 @@ bool HelloWorld::init()
     {
         return false;
     }
-   
 
-    
-  
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
     //初始地图
     if (!map)
         map = TMXTiledMap::create("home map/home.tmx");                  //加载瓦片地图,初始地图 
   
-
-    
-
     auto director = Director::getInstance();                       //获得导演
     map->setScale(director->getContentScaleFactor() * 2);              //调整大小，适配屏幕
     
     //加载地图
-    
     this->addChild(map, 1);
-
-    //添加NPC and Physical body
-    
-    
-
 
     //放置主角
     hero = Sprite::create("player.png");
@@ -69,6 +54,7 @@ bool HelloWorld::init()
     auto herobody = PhysicsBody::createBox(hero->getContentSize());
     herobody->setGravityEnable(false);
     herobody->setDynamic(false);
+
     //设置位掩码
     herobody->setCategoryBitmask((int)PhysicsCategory::Hero);
     herobody->setContactTestBitmask(0xfffffff);
@@ -181,7 +167,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
     switch (keyCode)
     {
         case EventKeyboard::KeyCode::KEY_W:
-        case EventKeyboard::KeyCode::KEY_UP_ARROW:
+        case EventKeyboard::KeyCode::KEY_UP_ARROW:   //主角向上移动
         {
             if(!IsBag)
             {
@@ -192,7 +178,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             }
             break;
         }
-        case EventKeyboard::KeyCode::KEY_DOWN_ARROW:
+        case EventKeyboard::KeyCode::KEY_DOWN_ARROW: //主角向下移动
         case EventKeyboard::KeyCode::KEY_S:
         {
             if(!IsBag)
@@ -206,7 +192,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             break;
         }
         case EventKeyboard::KeyCode::KEY_A:
-        case EventKeyboard::KeyCode::KEY_LEFT_ARROW:
+        case EventKeyboard::KeyCode::KEY_LEFT_ARROW: //主角向左移动
         {
             if(!IsBag)
             {
@@ -218,7 +204,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             break;
         }
         case EventKeyboard::KeyCode::KEY_D:
-        case EventKeyboard::KeyCode::KEY_RIGHT_ARROW:
+        case EventKeyboard::KeyCode::KEY_RIGHT_ARROW: //主角向右移动
         {
             if(!IsBag)
             {
@@ -229,18 +215,18 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             }
             break;
         }
-        case EventKeyboard::KeyCode::KEY_ESCAPE:
+        case EventKeyboard::KeyCode::KEY_ESCAPE:       //退出程序
         {
             Director::getInstance()->end();
             break;
         }
-        case EventKeyboard::KeyCode::KEY_TAB:
+        case EventKeyboard::KeyCode::KEY_TAB:          //进入技能树页面
         {
             Scene* menu = GameMenu::createScene();
             Director::getInstance()->pushScene(menu);
             break;
         }
-        case EventKeyboard::KeyCode::KEY_P:
+        case EventKeyboard::KeyCode::KEY_P:            //种植植物
         {
             if(!IsBag)
             {
@@ -248,7 +234,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             }
             break;
         }
-        case EventKeyboard::KeyCode::KEY_K:
+        case EventKeyboard::KeyCode::KEY_K:            //屠宰动物
         {
             if (IsCollide && !IsBag)
             {
@@ -257,7 +243,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             }
             break;
         }
-        case EventKeyboard::KeyCode::KEY_B:
+        case EventKeyboard::KeyCode::KEY_B:            //进入背包
         {
             if (BagNumber & 1)
             {
@@ -276,7 +262,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             BagNumber++;
             break;
         }
-        case EventKeyboard::KeyCode::KEY_Q:
+        case EventKeyboard::KeyCode::KEY_Q:           //养动物
         {
             AddAnimal();
             break;
@@ -379,20 +365,14 @@ bool HelloWorld::onContactSeparate(PhysicsContact& contact)
     return true;
 }
 
-
 void HelloWorld::AddPlant(const std::string & filepath)
 {
     auto position = hero->getPosition();
-
     auto plant = Plant::create(filepath);
-
     plant->setPosition(position);
-
     this->addChild(plant, 2);
-
-    plant->scheduleOnce(SEL_SCHEDULE(&Plant::update), 10.f);
-    
-    //plant->unschedule(SEL_SCHEDULE(&Plant::update));     //取消调度器
+    plant->scheduleUpdate();
+    plant->IsPlanted();
 }
 
 void HelloWorld::AddAnimal()
