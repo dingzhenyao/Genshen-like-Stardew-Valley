@@ -14,3 +14,20 @@ enum class PhysicsCategory
 	Plant = (1 << 3)
 };
 
+class Object : public cocos2d::Sprite 
+{
+public:
+	enum class ObjectType
+	{
+		Plant,
+		Animal
+	};
+	static Object* create(const std::string& filepath);
+
+	ObjectType getType();
+
+	void setType(ObjectType type);
+protected:
+	ObjectType _type;
+};
+

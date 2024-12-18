@@ -49,3 +49,13 @@ void Plant::ResetDeathtime()
 {
 	_deathtime = 0;
 }
+
+void Plant::setState(State state)
+{
+	_plantstate = state;
+}
+
+Plant::State Plant::getState()
+{
+	return _plantstate;
+}

@@ -2,7 +2,7 @@
 #define __HELLOWORLD_SCENE_H__
 
 #include "cocos2d.h"
-
+#include"NPC.h"
 class HelloWorld : public cocos2d::Layer
 {
 public:
@@ -26,6 +26,7 @@ public:
 
     //换季函数
     void ChangeSeason(float delta);              
+
     virtual void onExit();                  
     
     void AddPlant(const std::string& filepath);                               //添加植物
@@ -35,13 +36,14 @@ public:
     //生成HelloWorld::create()
     CREATE_FUNC(HelloWorld);
 private:
-    static cocos2d::TMXTiledMap* map;               //瓦片地图成员,以瓦片地图为成员，方便切换季节
+    //瓦片地图成员,以瓦片地图为成员，方便切换季节
+    static cocos2d::TMXTiledMap* map;               
    
     //主角
     static cocos2d::Sprite* hero;
 
     //被碰撞的物体
-    static cocos2d::Sprite* collidedSprite;
+    static Object* collidedSprite;
 
     //是否碰撞检测
     static bool IsCollide;

@@ -8,7 +8,7 @@
 USING_NS_CC;
 cocos2d::TMXTiledMap* HelloWorld::map = nullptr;
 Sprite* HelloWorld::hero = nullptr;
-Sprite* HelloWorld::collidedSprite = nullptr;
+Object* HelloWorld::collidedSprite = nullptr;
 bool HelloWorld::IsCollide = false;
 
 Scene* HelloWorld::createScene()
@@ -227,25 +227,16 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             }
             break;
         }
-        case EventKeyboard::KeyCode::KEY_K:            //屠宰动物
+        case EventKeyboard::KeyCode::KEY_B:            //背包
         {
-            if (IsCollide && !IsBag)
-            {
-                if(collidedSprite)
-                    this->removeChild(collidedSprite, true);
-            }
-            break;
-        }
-        case EventKeyboard::KeyCode::KEY_B:            //进入背包
-        {
-            if (BagNumber & 1)
+            if (BagNumber & 1)                         //进入背包
             {
                 auto bag = this->getChildByTag(Bag::BagTag);
                
                 this->removeChildByTag(Bag::BagTag,true);
                 IsBag = false;
             }
-            else
+            else                                       //离开背包
             {
                 auto bag = Bag::createLayer();
                 bag->setTag(Bag::BagTag);
@@ -260,7 +251,7 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             AddAnimal();
             break;
         }
-        case EventKeyboard::KeyCode::KEY_1:          //延申键
+        case EventKeyboard::KeyCode::KEY_1:          //延伸键
         {
             if (lastKeycode == EventKeyboard::KeyCode::KEY_P)  //按了P以后
             {
@@ -282,9 +273,39 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             {
                 if (collidedSprite)
                 {
-
+                    switch (collidedSprite->getType())
+                    {
+                        case Object::ObjectType::Animal:
+                        {
+                            collidedSprite->removeFromParent();
+                            collidedSprite = nullptr;
+                            break;
+                        }
+                        case Object::ObjectType::Plant:
+                        {
+                            auto plant = (Plant*)collidedSprite;
+                            switch(plant->getState())
+                            {
+                                case Plant::State::Growth:
+                                {
+                                    plant->setState(Plant::State::None);
+                                    collidedSprite->removeFromParent();
+                                    collidedSprite = nullptr;
+                                    break;
+                                }
+                                case Plant::State::Planted:
+                                {
+                                    plant->setState(Plant::State::Growth);
+                                    plant->setTexture("player.png");
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
                 }
             }
+            break;
         }
         default:
             break;
@@ -345,13 +366,15 @@ bool HelloWorld::onContactBegin(PhysicsContact& contact)
         case (int)PhysicsCategory::Animal:
         {
             IsCollide = true;
-            collidedSprite = (Sprite*)ShapeB->getNode();
+            collidedSprite = (Object*)ShapeB->getNode();
+            collidedSprite->setType(Object::ObjectType::Animal);
             break;
         }
         case (int)PhysicsCategory::Plant:
         {
             IsCollide = true;
-            collidedSprite = (Sprite*)ShapeB->getNode();
+            collidedSprite = (Object*)ShapeB->getNode();
+            collidedSprite->setType(Object::ObjectType::Plant);
             break;
         }
         break;
@@ -366,11 +389,14 @@ bool HelloWorld::onContactSeparate(PhysicsContact& contact)
     switch (ShapeB->getCategoryBitmask())
     {
         case (int)PhysicsCategory::Animal:
+        case (int)PhysicsCategory::Plant:
         {
             IsCollide = false;
             collidedSprite = nullptr;
+            break;
         }
-        break;
+        default:
+            break;
     }
     return true;
 }
@@ -388,9 +414,10 @@ void HelloWorld::AddPlant(const std::string & filepath)
     plantbody->setContactTestBitmask((int)PhysicsCategory::Hero);
 
     plant->setPhysicsBody(plantbody);
+
     this->addChild(plant, 2);
-    plant->scheduleUpdate();
     plant->IsPlanted();
+    plant->scheduleUpdate();
 }
 
 void HelloWorld::AddAnimal()
@@ -399,14 +426,17 @@ void HelloWorld::AddAnimal()
     //auto origin = Director::getInstance()->getVisibleOrigin();
 
 
-    auto animal = Sprite::create("monster.png");
+    auto animal = Object::create("monster.png");
     animal->setPosition(hero->getPosition());
     auto animalbody = PhysicsBody::createBox(animal->getContentSize());
+
     animalbody->setGravityEnable(false);
     animalbody->setDynamic(false);
     animalbody->setCategoryBitmask((int)PhysicsCategory::Animal);
     animalbody->setContactTestBitmask((int)PhysicsCategory::Hero);
+
     animal->setPhysicsBody(animalbody);
+
     this->addChild(animal, 3);
 
 
