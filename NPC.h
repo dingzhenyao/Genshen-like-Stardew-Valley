@@ -10,6 +10,7 @@ enum class PhysicsCategory
 	None = 0,
 	Hero = (1 << 0),
 	NPC = (1 << 1),
-	Animal = (1 << 2)
+	Animal = (1 << 2),
+	Plant = (1 << 3)
 };
 

@@ -44,3 +44,8 @@ void Plant::IsPlanted()
 	if(_plantstate == State::None)
 	    _plantstate = State::Planted;
 }
+
+void Plant::ResetDeathtime()
+{
+	_deathtime = 0;
+}

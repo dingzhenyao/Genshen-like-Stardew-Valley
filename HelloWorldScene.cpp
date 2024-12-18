@@ -149,20 +149,13 @@ void HelloWorld::ChangeSeason(float delta)
 
 void HelloWorld::onExit()
 {
-    //for (auto child : this->getChildren())
-    //{
-     //   child->pause();
-    //}
-    //this->removeAllChildren();
-    //if(this->isRunning())
-     //   Director::getInstance()->getTextureCache()->removeUnusedTextures();
     Layer::onExit();
 }
 
 void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
-    static bool IsBag = false;
-    static int BagNumber = 0;
+    static bool IsBag = false;        //检测是否为背包界面，如果为背包界面，人物就无法移动
+    static int BagNumber = 0;         //当BagNumber为奇数时，进入背包，当BagNumber为偶数时，离开背包
     static EventKeyboard::KeyCode lastKeycode = EventKeyboard::KeyCode::KEY_0;
     switch (keyCode)
     {
@@ -267,9 +260,9 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
             AddAnimal();
             break;
         }
-        case EventKeyboard::KeyCode::KEY_1:
+        case EventKeyboard::KeyCode::KEY_1:          //延申键
         {
-            if (lastKeycode == EventKeyboard::KeyCode::KEY_P)
+            if (lastKeycode == EventKeyboard::KeyCode::KEY_P)  //按了P以后
             {
                 AddPlant("monster.png");
             }
@@ -277,11 +270,21 @@ void HelloWorld::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
         }
         case EventKeyboard::KeyCode::KEY_2:
         {
-            if (lastKeycode == EventKeyboard::KeyCode::KEY_P)
+            if (lastKeycode == EventKeyboard::KeyCode::KEY_P)  //按了P以后
             {
                 AddPlant("player.png");
             }
             break;
+        }
+        case EventKeyboard::KeyCode::KEY_E:                    //施法键
+        {
+            if (!IsBag && IsCollide)
+            {
+                if (collidedSprite)
+                {
+
+                }
+            }
         }
         default:
             break;
@@ -343,6 +346,13 @@ bool HelloWorld::onContactBegin(PhysicsContact& contact)
         {
             IsCollide = true;
             collidedSprite = (Sprite*)ShapeB->getNode();
+            break;
+        }
+        case (int)PhysicsCategory::Plant:
+        {
+            IsCollide = true;
+            collidedSprite = (Sprite*)ShapeB->getNode();
+            break;
         }
         break;
     }
@@ -364,12 +374,20 @@ bool HelloWorld::onContactSeparate(PhysicsContact& contact)
     }
     return true;
 }
-
+//种植植物
 void HelloWorld::AddPlant(const std::string & filepath)
 {
     auto position = hero->getPosition();
     auto plant = Plant::create(filepath);
     plant->setPosition(position);
+
+    //添加物理体
+    auto plantbody = PhysicsBody::createBox(plant->getContentSize());
+
+    plantbody->setCategoryBitmask((int)PhysicsCategory::Plant);
+    plantbody->setContactTestBitmask((int)PhysicsCategory::Hero);
+
+    plant->setPhysicsBody(plantbody);
     this->addChild(plant, 2);
     plant->scheduleUpdate();
     plant->IsPlanted();
